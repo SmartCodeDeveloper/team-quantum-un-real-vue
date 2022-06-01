@@ -1,7 +1,7 @@
 <template>
   <!-- BEGIN: Dark Mode Switcher-->
   <div
-    class="dark-mode-switcher cursor-pointer fixed top-0 right-0 box border rounded-full flex items-center justify-center z-50 mt-8 mr-10"
+    class="dark-mode-switcher bg-[#18212b] cursor-pointer fixed top-0 right-0 box rounded-full flex items-center justify-center z-50 mt-8 mr-10"
     @click="switchMode"
   >
     <!-- <div>Dark Mode</div> -->

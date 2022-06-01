@@ -44,6 +44,9 @@ import FaqLayout2 from "../views/faq-layout-2/Main.vue";
 import FaqLayout3 from "../views/faq-layout-3/Main.vue";
 import Login from "../views/login/Main.vue";
 import Register from "../views/register/Main.vue";
+import ForgotPassword from "../views/forgot-password/Main.vue";
+import EnterOtp from "../views/enter-otp/Main.vue";
+import ResetPassword from "../views/reset-password/Main.vue";
 import ErrorPage from "../views/error-page/Main.vue";
 import UpdateProfile from "../views/update-profile/Main.vue";
 import ChangePassword from "../views/change-password/Main.vue";
@@ -1090,6 +1093,21 @@ const routes = [
     path: "/register",
     name: "register",
     component: Register,
+  },
+  {
+    path: "/forgot-password",
+    name: "forgot-password",
+    component: ForgotPassword,
+  },
+  {
+    path: "/enter-otp",
+    name: "enter-otp",
+    component: EnterOtp,
+  },
+  {
+    path: "/reset-password",
+    name: "reset-password",
+    component: ResetPassword,
   },
   {
     path: "/error-page",
