@@ -97,7 +97,7 @@
         }
     }
     .login__input {
-        min-width: 350px;
+        /* min-width: 350px; */
         @include media-breakpoint-down(xl) {
             @apply min-w-full;
         }
