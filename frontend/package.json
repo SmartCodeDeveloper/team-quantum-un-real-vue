@@ -1,8 +1,8 @@
 {
-  "name": "enigma-vue",
-  "version": "0.0.0",
+  "name": "unreal-capital",
+  "version": "0.1.0",
   "scripts": {
-    "dev": "vite",
+    "serve": "vite --port 8080 --host",
     "build": "vite build",
     "preview": "vite preview"
   },
