@@ -6,10 +6,10 @@
                 <!-- BEGIN: Login Info -->
                <div class="hidden xl:flex flex-col min-h-screen">
                     <a href="" class="-intro-x flex items-center pt-5">
-                        <img alt="unreal-capital"  style="margin-left: 4rem;" class="w-64 h-full" src="src/assets/images/uc/uc-light.png">
+                        <img alt="unreal-capital"  style="margin-left: 4rem;" class="w-64 h-full" src="@/assets/images/uc/uc-light.png">
                     </a>
                     <div class="my-auto">
-                      <img alt="unreal-captital" class="-intro-x opacity-5 m-auto ml-20 lg:w-3/5 xl:w-4/5 xl:-ml-24 xl:-mt-12 globe__spin" src="src/assets/images/uc/globe-removebg-preview.png">
+                      <img alt="unreal-captital" class="-intro-x opacity-5 m-auto ml-20 lg:w-3/5 xl:w-4/5 xl:-ml-24 xl:-mt-12 globe__spin" src="@/assets/images/uc/globe-removebg-preview.png">
                     </div>
                 </div>
                 <!-- END: Login Info -->
