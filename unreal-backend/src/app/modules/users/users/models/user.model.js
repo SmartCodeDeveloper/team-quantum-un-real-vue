@@ -11,6 +11,8 @@ const userSchema = mongoose.Schema({
     userName:  {
         type: String,
         unique: true,
+        sparse: true
+
     },
 
     profileImage: {
@@ -43,6 +45,7 @@ const userSchema = mongoose.Schema({
         uppercase: true,
         lowercase: true,
         unique: true,
+        sparse: true
     }
    
 }, {

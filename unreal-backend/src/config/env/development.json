@@ -2,7 +2,7 @@
     "appTitle": "Node Project",
     "env": "staging",
     "PORT": 8080,
-    "baseUrl": "http://www.sparkouttech.com",
+    "baseUrl": "http://www.mukilselvam.com",
     "mongodb": {
         "host": "mongodb://127.0.0.1:27017/",
         "uri": "mongodb://127.0.0.1:27017/UNREAL-COLLECTIONS",

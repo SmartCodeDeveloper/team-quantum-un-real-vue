@@ -108,8 +108,7 @@
         "xlsx": "^0.18.2"
     },
     "repository": {
-        "type": "git",
-        "url": "git@github.com:praveensparkout/nodejs-boilerplate.git"
+        "type": "git"
     },
     "keywords": [
         "mvc",
