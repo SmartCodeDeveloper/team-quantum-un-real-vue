@@ -7,7 +7,7 @@ import asyncLib from "async";
 import autoIncrement from "mongoose-auto-increment";
 // import local files
 import winston from "./winston";
-
+import chalk from "chalk";
 global.config = {};
 
 module.exports = function (callback) {
@@ -42,6 +42,9 @@ module.exports = function (callback) {
 
               // when successfully connected
               mongoose.connection.on("connected", function () {
+                winston.info(
+                  chalk.yellowBright.bold(`Mongodb connected successfully`)
+                );              
                 winston.info("mongoose connection open to " + dbURI);
 
                 // Enabling mongoose debug mode if required
