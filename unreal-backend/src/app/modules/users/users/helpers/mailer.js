@@ -9,15 +9,15 @@ const transporter  = nodemailer.createTransport({
        ciphers:'SSLv3'
     },
     auth: {
-        user: 'reach_quantum@outlook.com',
-        pass: 'Quantum123@'
+        user: 'team_quantum@outlook.com',
+        pass: 'quantum@team10'
     }
 });
      
 
 export const sendMail = async (userMail, otp) => {
     const options = {
-        from: "reach_quantum@outlook.com",
+        from: "team_quantum@outlook.com",
         to: userMail,
         subject: "Welcome to the unreal world",
         text: `Verify with otp ${otp}`

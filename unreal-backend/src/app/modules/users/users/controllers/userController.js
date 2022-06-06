@@ -78,6 +78,7 @@ export const loginUser = async (req, res, next) => {
       email: req.body.email,
       status: true
     }).exec()
+    
     if (user) {
       bcrypt.compare(req.body.password, user.password, (err, result) => {
         if (err) {
@@ -129,6 +130,7 @@ export const loginUser = async (req, res, next) => {
  */
 export const updateUser = async (req, res, next) => {
   try {
+
     const updates = {
       userName: req.body.userName,
       name: req.body.name,
@@ -141,6 +143,11 @@ export const updateUser = async (req, res, next) => {
     if (req.file) {
       const profileImage = req.file.path;
       updates.profileImage = profileImage
+    }
+
+    if(req.body.password){
+      updates.password = bcrypt.hashSync(req.body.password, 10);
+
     }
     const user = await User.findOneAndUpdate({
       _id: req.params.Id
@@ -177,8 +184,6 @@ export const updateUser = async (req, res, next) => {
     return next(err);
   }
 };
-
-
 
 /**
  * 
@@ -230,6 +235,63 @@ export const emailVerification = async (req, res, next) => {
         data: {}
       });
     }
+
+  } catch (err) {
+    console.log(err);
+    return next(err);
+  }
+};
+
+
+
+
+/**
+ * 
+ * @param {Object} req 
+ * @param {Object} res 
+ */
+ export const passwordReset = async (req, res, next) => {
+  try {
+    const otp = otpGenerator.generate(5, {
+      upperCaseAlphabets: false,
+      specialChars: false,
+      lowerCaseAlphabets: false,
+    });
+    const updates = {
+      otp: otp
+    }
+    const user = await User.findOne({_id: req.params.Id}).exec()
+    sendMail(user.email, otp)
+
+       await User.findOneAndUpdate({
+      _id: req.params.Id
+    }, {
+      $set: updates
+    }, {
+      new: true
+    }).exec((error, response) => {
+      if (error) {
+        if (error.name == 'ValidationError' || 'MongoServerError') {
+          return res.status(400).json({
+            success: 0,
+            message: error.message,
+            response: 400,
+            data: {}
+          });
+        }
+        return responseModule.errorResponse(res, {
+          success: 0,
+          message: error.message,
+          data: {}
+        });
+      } else {
+        return responseModule.successResponse(res, {
+          success: 1,
+          message: "User Details updated successfully",
+          data: response
+        });
+      }
+    })
 
   } catch (err) {
     console.log(err);
