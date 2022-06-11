@@ -15,48 +15,41 @@ import winston from '../../../../../config/winston';
  * @param {Object} res 
  */
 export const userSignup = async (req, res, next) => {
-
-  const password = bcrypt.hashSync(req.body.password, 10);
-  const otp = otpGenerator.generate(5, {
-    upperCaseAlphabets: false,
-    specialChars: false,
-    lowerCaseAlphabets: false,
-  });
-
-  const user = new User({
-    name: req.body.name,
-    userName: req.body.userName,
-    email: req.body.email,
-    otp: otp,
-    password: password,
-    walletAddress: req.body.walletAddress
-  })
-  if (req.file) {
-    const profileImage = req.file.path
-    user.profileImage = profileImage
-  }
   try {
+
+    if (req.body.password) {
+      var password = bcrypt.hashSync(req.body.password, 10);
+    }
+
+    const otp = otpGenerator.generate(5, {
+      upperCaseAlphabets: false,
+      specialChars: false,
+      lowerCaseAlphabets: false,
+    });
+
+    const user = new User({
+      firstName: req.body.firstName,
+      lastName: req.body.lastName,
+      email: req.body.email,
+      otp: otp,
+      password: password,
+    })
     sendMail(user.email, otp)
     await user.save((error, result) => {
       if (error) {
-        if (error.name == 'ValidationError' || 'MongoServerError') {
-          return res.status(400).json({
-            success: 0,
-            message: error.message,
-            response: 400,
-            data: {}
-          });
-        }
-        return responseModule.errorResponse(res, {
-          success: 0,
-          message: error.message,
-          data: {}
-        });
+        return responseModule.errorResponse(res, error);
       } else {
         return responseModule.successResponse(res, {
           success: 1,
           message: 'User created successfully',
-          data: result
+          data: {
+            firstName: result.firstName,
+            lastName: result.lastName,
+            email: result.email,
+            isVerified: result.isVerified,
+            _id: result._id
+
+          }
         });
       }
     })
@@ -76,17 +69,12 @@ export const loginUser = async (req, res, next) => {
   try {
     const user = await User.findOne({
       email: req.body.email,
-      status: true
+      isVerified: true
     }).exec()
-    
     if (user) {
       bcrypt.compare(req.body.password, user.password, (err, result) => {
         if (err) {
-          return responseModule.errorResponse(res, {
-            success: 0,
-            message: err.message,
-            data: {}
-          });
+          return responseModule.errorResponse(res, error);
         }
         if (result === true) {
           const token = jwt.sign({
@@ -104,15 +92,19 @@ export const loginUser = async (req, res, next) => {
         }
         if (result === false) {
           return res.status(401).json({
-            message: 'Invalid Password'
+            success: 0,
+            message: "Invalid Password",
+            response: 401,
+            data: {}
           })
         }
       })
     } else {
       return res.status(401).json({
-        message: 'You are not an Verified User',
-        data: {},
-        response: 401
+        success: 0,
+        message: "You are not an verfied user",
+        response: 400,
+        data: {}
       })
     }
 
@@ -132,11 +124,11 @@ export const updateUser = async (req, res, next) => {
   try {
 
     const updates = {
-      userName: req.body.userName,
-      name: req.body.name,
+      firstName: req.body.firstName,
+      lastName: req.body.lastName,
       walletAddress: req.body.walletAddress,
       email: req.body.email,
-      status: req.body.status,
+      isVerified: req.body.isVerified,
       walletAddress: req.body.walletAddress
 
     }
@@ -145,7 +137,7 @@ export const updateUser = async (req, res, next) => {
       updates.profileImage = profileImage
     }
 
-    if(req.body.password){
+    if (req.body.password) {
       updates.password = bcrypt.hashSync(req.body.password, 10);
 
     }
@@ -157,18 +149,8 @@ export const updateUser = async (req, res, next) => {
       new: true
     }).exec((error, response) => {
       if (error) {
-        if (error.name == 'ValidationError' || 'MongoServerError') {
-          return res.status(400).json({
-            success: 0,
-            message: error.message,
-            response: 400,
-            data: {}
-          });
-        }
-        return responseModule.errorResponse(res, {
-          success: 0,
-          message: "Could not update user details"
-        });
+        return responseModule.errorResponse(res, error);
+
       } else {
 
         return responseModule.successResponse(res, {
@@ -193,48 +175,44 @@ export const updateUser = async (req, res, next) => {
 export const emailVerification = async (req, res, next) => {
   try {
     const id = req.params.Id;
-    const user = await User.findById(id).exec()
+    await User.findById(id).exec(async(err, user)=>{
 
-    if (user.otp == req.body.otp) {
-      const updates = {
-        status: true,
+      if(err){
+        return responseModule.errorResponse(res, err);
       }
-      await User.findOneAndUpdate({
-        _id: id
-      }, {
-        $set: updates
-      }, {
-        new: true
-      }).exec((error, response) => {
-        if (error) {
-          if (error.name == 'ValidationError' || 'MongoServerError') {
-            return res.status(400).json({
-              success: 0,
-              message: error.message,
-              response: 400,
-              data: {}
+      if (user.otp == req.body.otp) {
+        const updates = {
+          isVerified: true,
+        }
+        await User.findOneAndUpdate({
+          _id: id
+        }, {
+          $set: updates
+        }, {
+          new: false
+        }).exec((error, response) => {
+          if (error) {
+            return responseModule.errorResponse(res, error);
+  
+          } else {
+            return responseModule.successResponse(res, {
+              success: 1,
+              message: "User Details updated successfully",
+              data: {isVerified: response.isVerified}
             });
           }
-          return responseModule.errorResponse(res, {
-            success: 0,
-            message: "Could not update user details"
-          });
-        } else {
-          return responseModule.successResponse(res, {
-            success: 1,
-            message: "User Details updated successfully",
-            data: response
-          });
-        }
-      })
-    } else {
-      return res.status(400).json({
-        success: 0,
-        message: "Invalid Otp",
-        response: 401,
-        data: {}
-      });
-    }
+        })
+      } else {
+        return res.status(400).json({
+          success: 0,
+          message: "Invalid Otp",
+          response: 400,
+          data: {}
+        });
+      }
+
+    })
+    
 
   } catch (err) {
     console.log(err);
@@ -250,7 +228,7 @@ export const emailVerification = async (req, res, next) => {
  * @param {Object} req 
  * @param {Object} res 
  */
- export const passwordReset = async (req, res, next) => {
+export const passwordReset = async (req, res, next) => {
   try {
     const otp = otpGenerator.generate(5, {
       upperCaseAlphabets: false,
@@ -260,10 +238,12 @@ export const emailVerification = async (req, res, next) => {
     const updates = {
       otp: otp
     }
-    const user = await User.findOne({_id: req.params.Id}).exec()
+    const user = await User.findOne({
+      _id: req.params.Id
+    }).exec()
     sendMail(user.email, otp)
 
-       await User.findOneAndUpdate({
+    await User.findOneAndUpdate({
       _id: req.params.Id
     }, {
       $set: updates
@@ -271,19 +251,8 @@ export const emailVerification = async (req, res, next) => {
       new: true
     }).exec((error, response) => {
       if (error) {
-        if (error.name == 'ValidationError' || 'MongoServerError') {
-          return res.status(400).json({
-            success: 0,
-            message: error.message,
-            response: 400,
-            data: {}
-          });
-        }
-        return responseModule.errorResponse(res, {
-          success: 0,
-          message: error.message,
-          data: {}
-        });
+        return responseModule.errorResponse(res, error);
+
       } else {
         return responseModule.successResponse(res, {
           success: 1,

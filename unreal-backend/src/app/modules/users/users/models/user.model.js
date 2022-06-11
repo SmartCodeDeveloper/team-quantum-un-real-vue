@@ -1,20 +1,16 @@
 import mongoose from 'mongoose'
-
 /**
  * User Schema
  */
 const userSchema = mongoose.Schema({
-    name: {
+    firstName: {
         type: String,
         required: [true, 'Name must not be empty'],
     },
-    userName:  {
+    lastName: {
         type: String,
-        unique: true,
-        sparse: true
-
+        required: [true, 'lastName must not be empty'],
     },
-
     profileImage: {
         type: String,
     },
@@ -22,22 +18,22 @@ const userSchema = mongoose.Schema({
         type: String,
         unique: true,
         validate: {
-          validator: function (v) {
-            return /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(v);
-          },
-          message: "Please enter a valid email"
+            validator: function (v) {
+                return /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(v);
+            },
+            message: "Please enter a valid email"
         },
         required: [true, "User Email must not be empty"]
-      },
+    },
     password: {
         type: String,
         required: true
     },
-    otp:{
+    otp: {
         type: Number,
     },
-    status: {
-        type : Boolean,
+    isVerified: {
+        type: Boolean,
         default: false
     },
     walletAddress: {
@@ -47,7 +43,7 @@ const userSchema = mongoose.Schema({
         unique: true,
         sparse: true
     }
-   
+
 }, {
     timestamps: true
 });

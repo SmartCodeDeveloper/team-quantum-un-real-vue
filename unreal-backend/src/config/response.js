@@ -10,14 +10,15 @@ export const successResponse = (res, data, statusCode = 200) => {
 };
 
 export const errorResponse = (res, err,) => {
-    if (err.name == 'ValidationError') {
-         res.status(400).json({
-            success: 0,
-            message: err.errors,
-            response: 400,
-            data: {}
-        });
-    } else{
+    if (err.name == 'ValidationError' || 'MongoServerError' || 'CastError') {
+        res.status(400).json({
+           success: 0,
+           message: err.message,
+           response: 400,
+           data: {}
+       });
+   } else{
+        
     res.json({
         success: 0,
         data: {},

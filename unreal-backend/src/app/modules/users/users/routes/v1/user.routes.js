@@ -15,7 +15,7 @@ export const routes = (app, version) => {
         updateUser,
     );
     app.post(
-        version + '/active-user/:Id',
+        version + '/verify-user-by-mail/:Id',upload.single('profileImage'),
         emailVerification,
     );
 
